@@ -65,9 +65,9 @@
 
         private void ValidateAmount(int amount)
         {
-            if (amount < 0)
+            if (amount == 0)
             {
-                throw new ArgumentOutOfRangeException("amount", "Amount must be positive");
+                throw new ArgumentOutOfRangeException("amount", "Amount cannot be 0");
             }
         }
 
