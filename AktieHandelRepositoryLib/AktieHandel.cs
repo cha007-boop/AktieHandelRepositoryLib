@@ -2,11 +2,14 @@
 {
     public class AktieHandel
     {
-        private static int _nextId = 1;
+        #region Instance fields
         private int _id;
         private string _name;
         private int _amount;
-        private decimal _exchangePrice;
+        private double _exchangePrice;
+        #endregion
+
+        #region Properties
         public int Id
         {
             get { return _id; }
@@ -29,7 +32,7 @@
                 _amount = value;
             }
         }
-        public decimal ExchangePrice
+        public double ExchangePrice
         {
             get { return _exchangePrice; }
             set
@@ -38,28 +41,41 @@
                 _exchangePrice = value;
             }
         }
+        #endregion
 
-
-        public AktieHandel(string name, int amount, decimal exchangePrice)
+        #region Constructors
+        public AktieHandel(string name, int amount, double exchangePrice)
         {
             ValidateName(name);
             ValidateAmount(amount);
             ValidateExchangePrice(exchangePrice);
-            _id = _nextId++;
+            _id = 0; // Initialize with a default value
             _name = name;
-            Amount = amount;
-            ExchangePrice = exchangePrice;
+            _amount = amount;
+            _exchangePrice = exchangePrice;
         }
+        public AktieHandel(int id, string name, int amount, double exchangePrice)
+        {
+            ValidateName(name);
+            ValidateAmount(amount);
+            ValidateExchangePrice(exchangePrice);
+            _id = id;
+            _name = name;
+            _amount = amount;
+            _exchangePrice = exchangePrice;
+        }
+        #endregion
 
+        #region Methods
         private void ValidateName(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
                 throw new ArgumentNullException("name");
             }
-            if (name.Length > 4)
+            if (name.Length < 4)
             {
-                throw new ArgumentException("Name must be at most 4 characters");
+                throw new ArgumentException("Name must be at least 4 characters");
             }
         }
 
@@ -71,12 +87,13 @@
             }
         }
 
-        private void ValidateExchangePrice(decimal exchangePrice)
+        private void ValidateExchangePrice(double exchangePrice)
         {
-            if (exchangePrice < 0)
+            if (exchangePrice <= 0)
             {
                 throw new ArgumentOutOfRangeException("exchangePrice", "Exchange Price must be positive");
             }
         }
+        #endregion
     }
 }
