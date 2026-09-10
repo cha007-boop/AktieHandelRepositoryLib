@@ -4,7 +4,7 @@ using System.Text;
 
 namespace AktieHandelRepositoryLib
 {
-    public interface IAktieHandelRepositoryDBAsync
+    public interface IAktieHandelRepositoryAsync
     {
         Task<AktieHandel> Add(AktieHandel aktieHandel);
         Task<AktieHandel?> Delete(int id);

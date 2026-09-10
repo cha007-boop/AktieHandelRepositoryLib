@@ -6,7 +6,7 @@ using System.Text;
 
 namespace AktieHandelRepositoryLib
 {
-    public class AktieHandelRepositoryDB : IAktieHandelRepositoryDBAsync
+    public class AktieHandelRepositoryDB : IAktieHandelRepositoryAsync
     {
         private string connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=AktieHandelDB;Integrated Security=True;Connect Timeout=30;Encrypt=True;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False;Command Timeout=30";
 

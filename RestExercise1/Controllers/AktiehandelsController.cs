@@ -10,9 +10,9 @@ namespace RestExercise1.Controllers
     [ApiController]
     public class AktiehandelsController : ControllerBase
     {
-        private readonly IAktieHandelRepositoryDBAsync _repository;
+        private readonly IAktieHandelRepositoryAsync _repository;
 
-        public AktiehandelsController(IAktieHandelRepositoryDBAsync repository)
+        public AktiehandelsController(IAktieHandelRepositoryAsync repository)
         {
             _repository = repository;
         }
