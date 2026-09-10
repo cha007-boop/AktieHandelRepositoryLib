@@ -50,7 +50,7 @@ namespace AktieHandelRepositoryLib
             return aktieHandelToDelete;
         }
 
-        public async Task<List<AktieHandel>> Get(double exchangePrice, string? name)
+        public async Task<IEnumerable<AktieHandel>> Get(double exchangePrice, string? name)
         {
             List<AktieHandel> aktieHandels = new List<AktieHandel>();
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -80,7 +80,7 @@ namespace AktieHandelRepositoryLib
             return aktieHandels;
         }
 
-        public async Task<List<AktieHandel>> GetAll()
+        public async Task<IEnumerable<AktieHandel>> GetAll()
         {
             List<AktieHandel> aktieHandels = new List<AktieHandel>();
             using (SqlConnection connection = new SqlConnection(connectionString))

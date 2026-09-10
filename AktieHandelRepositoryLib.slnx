@@ -1,4 +1,5 @@
 <Solution>
   <Project Path="AktieHandelRepositoryLib/AktieHandelRepositoryLib.csproj" />
+  <Project Path="RestExercise1/RestExercise1.csproj" Id="01ef521f-54c8-4e6b-8f6e-18897bee8856" />
   <Project Path="UnitTests/UnitTests.csproj" />
 </Solution>

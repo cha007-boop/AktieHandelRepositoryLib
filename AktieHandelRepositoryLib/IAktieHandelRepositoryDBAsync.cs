@@ -8,8 +8,8 @@ namespace AktieHandelRepositoryLib
     {
         Task<AktieHandel> Add(AktieHandel aktieHandel);
         Task<AktieHandel?> Delete(int id);
-        Task<List<AktieHandel>> Get(double exchangePrice, string? name);
-        Task<List<AktieHandel>> GetAll();
+        Task<IEnumerable<AktieHandel>> Get(double exchangePrice, string? name);
+        Task<IEnumerable<AktieHandel>> GetAll();
         Task<AktieHandel?> GetById(int id);
         Task<AktieHandel?> Update(int id, AktieHandel aktie);
     }

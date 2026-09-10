@@ -35,7 +35,7 @@ namespace AktieHandelRepositoryLib
         /// <returns>A list of all <see cref="AktieHandel"/> objects.</returns>
         public List<AktieHandel> GetAll()
         {
-            return _aktieHandelList;
+            return new List<AktieHandel>(_aktieHandelList);
         }
 
         public List<AktieHandel> Get(double exchangePrice, string? name)
