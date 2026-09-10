@@ -73,9 +73,8 @@ namespace AktieHandelRepositoryLib
             if (aktieHandel != null)
             {
                 _aktieHandelList.Remove(aktieHandel);
-                return aktieHandel;
             }
-            return null;
+            return aktieHandel;
         }
 
 
