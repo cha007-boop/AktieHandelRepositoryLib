@@ -13,6 +13,7 @@
         public int Id
         {
             get { return _id; }
+            set { _id = value; }
         }
         public string Name 
         { 
@@ -44,6 +45,13 @@
         #endregion
 
         #region Constructors
+        public AktieHandel()
+        {
+            _id = 0; // Initialize with a default value
+            _name = "Placeholder";
+            _amount = 1;
+            _exchangePrice = 1.0;
+        }
         public AktieHandel(string name, int amount, double exchangePrice)
         {
             ValidateName(name);

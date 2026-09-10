@@ -38,9 +38,11 @@ namespace AktieHandelRepositoryLib
             return _aktieHandelList;
         }
 
-        public List<AktieHandel> Get()
+        public List<AktieHandel> Get(double exchangePrice, string? name)
         {
-            return _aktieHandelList;
+            return (string.IsNullOrEmpty(name)
+                ? _aktieHandelList.FindAll(x => x.ExchangePrice >= exchangePrice)
+                : _aktieHandelList.FindAll(x => x.ExchangePrice >= exchangePrice && x.Name == name));
         }
 
         /// <summary>

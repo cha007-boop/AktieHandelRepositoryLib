@@ -91,19 +91,27 @@ public class TestAktieHandelRepository
     }
 
     [TestMethod]
-    public void Get_ReturnsAllAddedAktieHandel()
+    [DataRow(10.0, null, 3)]
+    [DataRow(20.0, "TEST", 1)]
+    [DataRow(5.0, "TEST", 2)]
+    [DataRow(30.0, "TEST2", 1)]
+    [DataRow(100.0, null, 0)]
+    public void Get_ReturnsAllAddedAktieHandel(double exchangePrice, string? name, int expectedCount)
     {
-        // Arrange
-        AktieHandel aktieHandel1 = new AktieHandel("TEST1", 1, 10.0);
-        AktieHandel aktieHandel2 = new AktieHandel("TEST2", 2, 20.0);
-        TheAktieHandelRepository.Add(aktieHandel1);
-        TheAktieHandelRepository.Add(aktieHandel2);
+        // Arrange 
+        List<AktieHandel> aktieHandelList = new List<AktieHandel> {
+            new AktieHandel("TEST", 1, 10.0),
+            new AktieHandel("TEST", 2, 20.0),
+            new AktieHandel("TEST2", 3, 30.0)
+        };
+        foreach (var aktieHandel in aktieHandelList)
+        {
+            TheAktieHandelRepository.Add(aktieHandel);
+        }
         // Act
-        List<AktieHandel> allAktieHandel = TheAktieHandelRepository.Get();
+        List<AktieHandel> filteredAktieHandel = TheAktieHandelRepository.Get(exchangePrice, name);
         // Assert
-        Assert.AreEqual(2, allAktieHandel.Count);
-        Assert.IsTrue(allAktieHandel.Any(a => a.Name == "TEST1"));
-        Assert.IsTrue(allAktieHandel.Any(a => a.Name == "TEST2"));
+        Assert.AreEqual(expectedCount, filteredAktieHandel.Count);
     }
 
     [TestMethod]
