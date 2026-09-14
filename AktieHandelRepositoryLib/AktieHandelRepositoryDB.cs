@@ -10,6 +10,28 @@ namespace AktieHandelRepositoryLib
     {
         private string connectionString = Connection.ConnectionString;
 
+        public Dictionary<string, string> FilterableColumns { get; } = new Dictionary<string, string>
+        {
+            { "Id", "Id" },
+            { "Name", "Name" },
+            { "Amount", "Amount" },
+            { "ExchangePrice", "Exchange Price" }
+        };
+        public Dictionary<string, string> SortableColumns { get; } = new Dictionary<string, string>
+        {
+            { "Id", "Id" },
+            { "Name", "Name" },
+            { "Amount", "Amount" },
+            { "ExchangePrice", "Exchange Price" }
+        };
+        public Dictionary<string, string> ComparableColumns { get; } = new Dictionary<string, string>
+        {
+            { "Amount", "Amount" },
+            { "ExchangePrice", "Exchange Price" }
+        };
+
+
+
         /// <summary>
         /// Adds a new <see cref="AktieHandel"/> to the database and returns the added object with its generated Id.
         /// </summary>
@@ -183,6 +205,136 @@ namespace AktieHandelRepositoryLib
                     await cmd.ExecuteNonQueryAsync();
                     return await GetById(id);
                 }
+            }
+        }
+
+        /// <summary>
+        /// Lists <see cref="AktieHandel"/> objects from the database that match the specified filter and sort criteria.
+        /// </summary>
+        /// <param name="filterColumn">The column to filter by.</param>
+        /// <param name="filterValue">The value to filter by.</param>
+        /// <param name="sortColumn">The column to sort by.</param>
+        /// <param name="sortOrder">The order to sort by.</param>
+        /// <returns>A list of <see cref="AktieHandel"/> objects that match the criteria.</returns>
+        /// <exception cref="ArgumentException"></exception>
+        public async Task<IEnumerable<AktieHandel>> ListFiltered(string? filterColumn, string? filterValue, string? sortColumn, string? sortOrder)
+        {
+            List<AktieHandel> aktieHandels = new List<AktieHandel>();
+            if (filterColumn == null && sortColumn == null)
+            {
+                return await GetAll();
+            }
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                if (filterColumn != null && !FilterableColumns.ContainsKey(filterColumn))
+                {
+                    throw new ArgumentException("Invalid column name");
+                }
+                if (sortColumn != null && !SortableColumns.ContainsKey(sortColumn))
+                {
+                    throw new ArgumentException("Invalid sort column");
+                }
+                SqlCommand cmd = new SqlCommand
+                {
+                    Connection = connection
+                };
+                StringBuilder queryString = new StringBuilder("Select * from AktieHandel");
+                if (filterColumn != null && filterValue != null)
+                {
+                    queryString.Append($" WHERE {filterColumn} LIKE @FilterValue");
+                    cmd.Parameters.AddWithValue("@FilterValue", $"%{filterValue}%");
+                }
+                if (sortColumn != null)
+                {
+                    if (sortOrder == null || !sortOrder.Equals("desc", StringComparison.OrdinalIgnoreCase))
+                    {
+                        sortOrder = "ASC";
+                    }
+                    queryString.Append($" ORDER BY {sortColumn} {sortOrder}");
+                }
+                cmd.CommandText = queryString.ToString();
+                await connection.OpenAsync();
+                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        AktieHandel aktieHandel = new AktieHandel
+                        {
+                            Id = reader.GetInt32("Id"),
+                            Name = reader.GetString("Name"),
+                            Amount = reader.GetInt32("Amount"),
+                            ExchangePrice = reader.GetDouble("ExchangePrice")
+                        };
+                        aktieHandels.Add(aktieHandel);
+                    }
+                }
+                return aktieHandels;
+
+            }
+        }
+
+
+        /// <summary>
+        /// Lists <see cref="AktieHandel"/> objects from the database that match the specified comparison and sort criteria.
+        /// </summary>
+        /// <param name="compareColumn">The column to compare by.</param>
+        /// <param name="compareValue">The value to compare by.</param>
+        /// <param name="sortColumn">The column to sort by.</param>
+        /// <param name="sortOrder">The order to sort by.</param>
+        /// <returns>A list of <see cref="AktieHandel"/> objects that match the criteria.</returns>
+        /// <exception cref="ArgumentException"></exception>
+        public async Task<IEnumerable<AktieHandel>> ListComparable(string? compareColumn, double? compareValue, string? sortColumn, string? sortOrder)
+        {
+            List<AktieHandel> aktieHandels = new List<AktieHandel>();
+            if (compareColumn == null && sortColumn == null)
+            {
+                return await GetAll();
+            }
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                if (compareColumn != null && !ComparableColumns.ContainsKey(compareColumn))
+                {
+                    throw new ArgumentException("Invalid column name");
+                }
+                if (sortColumn != null && !SortableColumns.ContainsKey(sortColumn))
+                {
+                    throw new ArgumentException("Invalid sort column");
+                }
+                SqlCommand cmd = new SqlCommand
+                {
+                    Connection = connection
+                };
+                StringBuilder queryString = new StringBuilder("Select * from AktieHandel");
+                if (compareColumn != null && compareValue != null)
+                {
+                    queryString.Append($" WHERE {compareColumn} >= @CompareValue");
+                    cmd.Parameters.AddWithValue("@CompareValue", compareValue);
+                }
+                if (sortColumn != null)
+                {
+                    if (sortOrder == null || !sortOrder.Equals("desc", StringComparison.OrdinalIgnoreCase))
+                    {
+                        sortOrder = "ASC";
+                    }
+                    queryString.Append($" ORDER BY {sortColumn} {sortOrder}");
+                }
+                cmd.CommandText = queryString.ToString();
+                await connection.OpenAsync();
+                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        AktieHandel aktieHandel = new AktieHandel
+                        {
+                            Id = reader.GetInt32("Id"),
+                            Name = reader.GetString("Name"),
+                            Amount = reader.GetInt32("Amount"),
+                            ExchangePrice = reader.GetDouble("ExchangePrice")
+                        };
+                        aktieHandels.Add(aktieHandel);
+                    }
+                }
+                return aktieHandels;
             }
         }
     }

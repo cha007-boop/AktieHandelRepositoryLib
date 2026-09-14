@@ -12,5 +12,7 @@ namespace AktieHandelRepositoryLib
         Task<IEnumerable<AktieHandel>> GetAll();
         Task<AktieHandel?> GetById(int id);
         Task<AktieHandel?> Update(int id, AktieHandel aktie);
+        Task<IEnumerable<AktieHandel>> ListFiltered(string? filterColumn, string? filterValue, string? sortColumn, string? sortOrder);
+        Task<IEnumerable<AktieHandel>> ListComparable(string? compareColumn, double? compareValue, string? sortColumn, string? sortOrder);
     }
 }
