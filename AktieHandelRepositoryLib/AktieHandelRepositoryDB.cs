@@ -8,8 +8,13 @@ namespace AktieHandelRepositoryLib
 {
     public class AktieHandelRepositoryDB : IAktieHandelRepositoryAsync
     {
-        private string connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=AktieHandelDB;Integrated Security=True;Connect Timeout=30;Encrypt=True;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False;Command Timeout=30";
+        private string connectionString = Connection.ConnectionString;
 
+        /// <summary>
+        /// Adds a new <see cref="AktieHandel"/> to the database and returns the added object with its generated Id.
+        /// </summary>
+        /// <param name="aktieHandel">The <see cref="AktieHandel"/> to add.</param>
+        /// <returns>The added <see cref="AktieHandel"/> with its generated Id.</returns>
         public async Task<AktieHandel> Add(AktieHandel aktieHandel)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -32,6 +37,11 @@ namespace AktieHandelRepositoryLib
             }
         }
 
+        /// <summary>
+        /// Deletes the <see cref="AktieHandel"/> with the specified Id from the database and returns the deleted object. If no object with the specified Id exists, returns null.
+        /// </summary>
+        /// <param name="id">The Id of the <see cref="AktieHandel"/> to delete.</param>
+        /// <returns>The deleted <see cref="AktieHandel"/> or null if not found.</returns>
         public async Task<AktieHandel?> Delete(int id)
         {
             AktieHandel aktieHandelToDelete = await GetById(id);
@@ -50,6 +60,12 @@ namespace AktieHandelRepositoryLib
             return aktieHandelToDelete;
         }
 
+        /// <summary>
+        /// Gets a list of <see cref="AktieHandel"/> objects from the database that have an ExchangePrice greater than or equal to the specified value. If a name is provided, it will also filter by that name.
+        /// </summary>
+        /// <param name="exchangePrice">The minimum ExchangePrice for the returned objects.</param>
+        /// <param name="name">The name to filter by, or null to not filter by name.</param>
+        /// <returns>A list of <see cref="AktieHandel"/> objects that match the criteria.</returns>
         public async Task<IEnumerable<AktieHandel>> Get(double exchangePrice, string? name)
         {
             List<AktieHandel> aktieHandels = new List<AktieHandel>();
@@ -80,6 +96,10 @@ namespace AktieHandelRepositoryLib
             return aktieHandels;
         }
 
+        /// <summary>
+        /// Gets all <see cref="AktieHandel"/> objects from the database.
+        /// </summary>
+        /// <returns>A list of all <see cref="AktieHandel"/> objects.</returns>
         public async Task<IEnumerable<AktieHandel>> GetAll()
         {
             List<AktieHandel> aktieHandels = new List<AktieHandel>();
@@ -105,6 +125,11 @@ namespace AktieHandelRepositoryLib
             }
         }
 
+        /// <summary>
+        /// Gets a single <see cref="AktieHandel"/> object from the database by its Id. If no object with the specified Id exists, returns null.
+        /// </summary>
+        /// <param name="id">The Id of the <see cref="AktieHandel"/> to retrieve.</param>
+        /// <returns>The <see cref="AktieHandel"/> object with the specified Id, or null if not found.</returns>
         public async Task<AktieHandel?> GetById(int id)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
