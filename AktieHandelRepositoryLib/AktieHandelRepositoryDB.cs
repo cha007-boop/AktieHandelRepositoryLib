@@ -38,7 +38,7 @@ namespace AktieHandelRepositoryLib
         }
 
         /// <summary>
-        /// Deletes the <see cref="AktieHandel"/> with the specified Id from the database and returns the deleted object. If no object with the specified Id exists, returns null.
+        /// Deletes the <see cref="AktieHandel"/> with the specified Id from the database and returns the deleted object.
         /// </summary>
         /// <param name="id">The Id of the <see cref="AktieHandel"/> to delete.</param>
         /// <returns>The deleted <see cref="AktieHandel"/> or null if not found.</returns>
@@ -61,7 +61,7 @@ namespace AktieHandelRepositoryLib
         }
 
         /// <summary>
-        /// Gets a list of <see cref="AktieHandel"/> objects from the database that have an ExchangePrice greater than or equal to the specified value. If a name is provided, it will also filter by that name.
+        /// Gets a list of <see cref="AktieHandel"/> objects from the database that have an ExchangePrice greater than or equal to the specified value.
         /// </summary>
         /// <param name="exchangePrice">The minimum ExchangePrice for the returned objects.</param>
         /// <param name="name">The name to filter by, or null to not filter by name.</param>
@@ -126,7 +126,7 @@ namespace AktieHandelRepositoryLib
         }
 
         /// <summary>
-        /// Gets a single <see cref="AktieHandel"/> object from the database by its Id. If no object with the specified Id exists, returns null.
+        /// Gets a single <see cref="AktieHandel"/> object from the database by its Id.
         /// </summary>
         /// <param name="id">The Id of the <see cref="AktieHandel"/> to retrieve.</param>
         /// <returns>The <see cref="AktieHandel"/> object with the specified Id, or null if not found.</returns>
@@ -158,6 +158,12 @@ namespace AktieHandelRepositoryLib
             }
         }
 
+        /// <summary>
+        /// Updates an existing <see cref="AktieHandel"/> in the database with the specified Id.
+        /// </summary>
+        /// <param name="id">The Id of the <see cref="AktieHandel"/> to update.</param>
+        /// <param name="aktie">The updated <see cref="AktieHandel"/> object.</param>
+        /// <returns>The updated <see cref="AktieHandel"/> object, or null if not found.</returns>
         public async Task<AktieHandel?> Update(int id, AktieHandel aktie)
         {
             if (GetById(id) == null)
