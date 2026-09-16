@@ -12,22 +12,22 @@ namespace AktieHandelRepositoryLib
 
         public Dictionary<string, string> FilterableColumns { get; } = new Dictionary<string, string>
         {
-            { "Id", "Id" },
-            { "Name", "Name" },
-            { "Amount", "Amount" },
-            { "ExchangePrice", "Exchange Price" }
+            { "id", "Id" },
+            { "name", "Name" },
+            { "amount", "Amount" },
+            { "exchangeprice", "Exchange Price" }
         };
         public Dictionary<string, string> SortableColumns { get; } = new Dictionary<string, string>
         {
-            { "Id", "Id" },
-            { "Name", "Name" },
-            { "Amount", "Amount" },
-            { "ExchangePrice", "Exchange Price" }
+            { "id", "Id" },
+            { "name", "Name" },
+            { "amount", "Amount" },
+            { "exchangeprice", "Exchange Price" }
         };
         public Dictionary<string, string> ComparableColumns { get; } = new Dictionary<string, string>
         {
-            { "Amount", "Amount" },
-            { "ExchangePrice", "Exchange Price" }
+            { "amount", "Amount" },
+            { "exchangeprice", "Exchange Price" }
         };
 
 
@@ -226,11 +226,11 @@ namespace AktieHandelRepositoryLib
             }
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                if (filterColumn != null && !FilterableColumns.ContainsKey(filterColumn))
+                if (filterColumn != null && !FilterableColumns.ContainsKey(filterColumn.ToLower()))
                 {
                     throw new ArgumentException("Invalid column name");
                 }
-                if (sortColumn != null && !SortableColumns.ContainsKey(sortColumn))
+                if (sortColumn != null && !SortableColumns.ContainsKey(sortColumn.ToLower()))
                 {
                     throw new ArgumentException("Invalid sort column");
                 }
