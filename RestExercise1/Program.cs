@@ -1,4 +1,7 @@
 using AktieHandelRepositoryLib;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +30,32 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddTransient<IAktieHandelRepositoryAsync,AktieHandelRepositoryDB>();
 
+// JWT
+var jwtSettings = builder.Configuration.GetSection("Jwt");
+var key = Encoding.ASCII.GetBytes(jwtSettings["Key"]!);
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwtSettings["Issuer"],
+        ValidAudience = jwtSettings["Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(key)
+    };
+});
+
+builder.Services.AddAuthorization();
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -41,7 +70,8 @@ app.UseSwaggerUI();
 
 app.UseCors("AllowAll");
 
-app.UseAuthorization();
+app.UseAuthentication(); // Checks "who are you?"
+app.UseAuthorization(); // Checks "Are you allowed to be here?"
 
 app.MapControllers();
 
