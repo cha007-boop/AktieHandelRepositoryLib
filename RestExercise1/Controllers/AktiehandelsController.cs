@@ -37,16 +37,18 @@ namespace RestExercise1.Controllers
             return Ok(aktieHandels);
         }
 
-        // GET api/<AktieHandelsController>/filter?column=<columnName>&value=<filterValue>&sort=<columnName>&order=<sortOrder>
+        // GET api/<AktieHandelsController>/filter?id=<id>&name=<name>&maxExchangePrice=<maxExchangePrice>&maxAmount=<maxAmount>&sort=<sort>&order=<order>
         [HttpGet("filter")]
-        public async Task<ActionResult<IEnumerable<AktieHandel>>> GetFiltered([FromQuery] string column, 
-                                                                              [FromQuery] string value, 
-                                                                              [FromQuery] string sort, 
-                                                                              [FromQuery] string order)
+        public async Task<ActionResult<IEnumerable<AktieHandel>>> GetAll([FromQuery] int? id = null,
+                                                                              [FromQuery] string? name = null,
+                                                                              [FromQuery] double? maxExchangePrice = null,
+                                                                              [FromQuery] int? maxAmount = null,
+                                                                              [FromQuery] string? sort = null,
+                                                                              [FromQuery] string? order = null)
         {
             try
             {
-                var aktieHandels = await _repository.ListFiltered(column, value, sort, order);
+                var aktieHandels = await _repository.GetAll(id, name, maxExchangePrice, maxAmount, sort, order);
                 if (aktieHandels == null)
                 {
                     return NotFound();
@@ -98,17 +100,13 @@ namespace RestExercise1.Controllers
                     return BadRequest();
                 }
             }
-            catch (SqlException)
+            catch (ArgumentException aex)
             {
-                return BadRequest();
+                return BadRequest(aex.Message);
             }
-            catch (ArgumentException)
+            catch (Exception ex)
             {
-                return BadRequest();
-            }
-            catch (Exception)
-            {
-                return BadRequest();
+                return BadRequest(ex.Message);
             }
 
 
@@ -133,13 +131,13 @@ namespace RestExercise1.Controllers
                     return NotFound();
                 }
             }
-            catch (ArgumentException)
+            catch (ArgumentException aex)
             {
-                return BadRequest();
+                return BadRequest(aex.Message);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return BadRequest();
+                return BadRequest(ex.Message);
             }
         }
 

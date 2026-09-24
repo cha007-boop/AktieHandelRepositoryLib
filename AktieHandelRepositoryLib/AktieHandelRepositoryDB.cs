@@ -10,13 +10,7 @@ namespace AktieHandelRepositoryLib
     {
         private string connectionString = Connection.ConnectionString;
 
-        public Dictionary<string, string> FilterableColumns { get; } = new Dictionary<string, string>
-        {
-            { "id", "Id" },
-            { "name", "Name" },
-            { "amount", "Amount" },
-            { "exchangeprice", "Exchange Price" }
-        };
+
         public Dictionary<string, string> SortableColumns { get; } = new Dictionary<string, string>
         {
             { "id", "Id" },
@@ -24,11 +18,7 @@ namespace AktieHandelRepositoryLib
             { "amount", "Amount" },
             { "exchangeprice", "Exchange Price" }
         };
-        public Dictionary<string, string> ComparableColumns { get; } = new Dictionary<string, string>
-        {
-            { "amount", "Amount" },
-            { "exchangeprice", "Exchange Price" }
-        };
+
 
 
 
@@ -81,71 +71,36 @@ namespace AktieHandelRepositoryLib
             }
             return aktieHandelToDelete;
         }
-
-        /// <summary>
-        /// Gets a list of <see cref="AktieHandel"/> objects from the database that have an ExchangePrice greater than or equal to the specified value.
-        /// </summary>
-        /// <param name="exchangePrice">The minimum ExchangePrice for the returned objects.</param>
-        /// <param name="name">The name to filter by, or null to not filter by name.</param>
-        /// <returns>A list of <see cref="AktieHandel"/> objects that match the criteria.</returns>
-        public async Task<IEnumerable<AktieHandel>> Get(double exchangePrice, string? name)
-        {
-            List<AktieHandel> aktieHandels = new List<AktieHandel>();
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                SqlCommand cmd = new SqlCommand("SELECT * FROM AktieHandel WHERE ExchangePrice >= @ExchangePrice" + (name != null ? " AND Name = @Name" : ""), connection);
-                cmd.Parameters.AddWithValue("@ExchangePrice", exchangePrice);
-                if (name != null)
-                {
-                    cmd.Parameters.AddWithValue("@Name", name);
-                }
-                await connection.OpenAsync();
-                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
-                {
-                    while (await reader.ReadAsync())
-                    {
-                        AktieHandel aktieHandel = new AktieHandel
-                        {
-                            Id = reader.GetInt32("Id"),
-                            Name = reader.GetString("Name"),
-                            Amount = reader.GetInt32("Amount"),
-                            ExchangePrice = reader.GetDouble("ExchangePrice")
-                        };
-                        aktieHandels.Add(aktieHandel);
-                    }
-                }
-            }
-            return aktieHandels;
-        }
-
-        /// <summary>
-        /// Gets all <see cref="AktieHandel"/> objects from the database.
-        /// </summary>
-        /// <returns>A list of all <see cref="AktieHandel"/> objects.</returns>
-        public async Task<IEnumerable<AktieHandel>> GetAll()
-        {
-            List<AktieHandel> aktieHandels = new List<AktieHandel>();
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                SqlCommand cmd = new SqlCommand("SELECT * FROM AktieHandel", connection);
-                await connection.OpenAsync();
-                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
-                {
-                    while (await reader.ReadAsync())
-                    {
-                        AktieHandel aktieHandel = new AktieHandel
-                        {
-                            Id = reader.GetInt32("Id"),
-                            Name = reader.GetString("Name"),
-                            Amount = reader.GetInt32("Amount"),
-                            ExchangePrice = reader.GetDouble("ExchangePrice")
-                        };
-                        aktieHandels.Add(aktieHandel);
-                    }
-                }
-                return aktieHandels;
-            }
-        }
+        #region Old GetAll
+        ///// <summary>
+        ///// Gets all <see cref="AktieHandel"/> objects from the database.
+        ///// </summary>
+        ///// <returns>A list of all <see cref="AktieHandel"/> objects.</returns>
+        //public async Task<IEnumerable<AktieHandel>> GetAll()
+        //{
+        //    List<AktieHandel> aktieHandels = new List<AktieHandel>();
+        //    using (SqlConnection connection = new SqlConnection(connectionString))
+        //    {
+        //        SqlCommand cmd = new SqlCommand("SELECT * FROM AktieHandel", connection);
+        //        await connection.OpenAsync();
+        //        using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+        //        {
+        //            while (await reader.ReadAsync())
+        //            {
+        //                AktieHandel aktieHandel = new AktieHandel
+        //                {
+        //                    Id = reader.GetInt32("Id"),
+        //                    Name = reader.GetString("Name"),
+        //                    Amount = reader.GetInt32("Amount"),
+        //                    ExchangePrice = reader.GetDouble("ExchangePrice")
+        //                };
+        //                aktieHandels.Add(aktieHandel);
+        //            }
+        //        }
+        //        return aktieHandels;
+        //    }
+        //}
+        #endregion
 
         /// <summary>
         /// Gets a single <see cref="AktieHandel"/> object from the database by its Id.
@@ -211,19 +166,22 @@ namespace AktieHandelRepositoryLib
         /// <summary>
         /// Lists <see cref="AktieHandel"/> objects from the database that match the specified filter and sort criteria.
         /// </summary>
-        /// <param name="filterColumn">The column to filter by.</param>
-        /// <param name="filterValue">The value to filter by.</param>
+        /// <param name="id">The Id of the <see cref="AktieHandel"/> to filter by, or null to not filter by Id.</param>
+        /// <param name="name">The name to filter by, or null to not filter by name.</param>
+        /// <param name="maxExchangePrice">The maximum ExchangePrice to filter by, or null to not filter by ExchangePrice.</param>
+        /// <param name="maxAmount">The maximum Amount to filter by, or null to not filter by Amount.</param>
         /// <param name="sortColumn">The column to sort by.</param>
         /// <param name="sortOrder">The order to sort by.</param>
         /// <returns>A list of <see cref="AktieHandel"/> objects that match the criteria.</returns>
         /// <exception cref="ArgumentException"></exception>
-        public async Task<IEnumerable<AktieHandel>> ListFiltered(string? filterColumn, string? filterValue, string? sortColumn, string? sortOrder)
+        public async Task<IEnumerable<AktieHandel>> GetAll(int? id = null, 
+                                                           string? name = null, 
+                                                           double? maxExchangePrice = null, 
+                                                           int? maxAmount = null, 
+                                                           string? sortColumn = null, 
+                                                           string? sortOrder = null)
         {
             List<AktieHandel> aktieHandels = new List<AktieHandel>();
-            if (string.IsNullOrWhiteSpace(filterColumn) && string.IsNullOrWhiteSpace(sortColumn))
-            {
-                return await GetAll();
-            }
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 SqlCommand cmd = new SqlCommand
@@ -233,90 +191,31 @@ namespace AktieHandelRepositoryLib
                 StringBuilder queryString = new StringBuilder("Select * from AktieHandel");
 
                 // Adding filter part of query
-                if (!string.IsNullOrWhiteSpace(filterColumn))
+                if (!string.IsNullOrWhiteSpace(name) || id.HasValue || maxExchangePrice != null || maxAmount != null)
                 {
-                    if (!FilterableColumns.ContainsKey(filterColumn.ToLower()))
+                    queryString.Append(" WHERE");
+                    List<string> conditions = new List<string>();
+                    if (id.HasValue)
                     {
-                        throw new ArgumentException("Invalid column name");
+                        conditions.Add(" Id = @Id");
+                        cmd.Parameters.AddWithValue("@Id", id.Value);
                     }
-                    if (!string.IsNullOrWhiteSpace(filterValue))
+                    if (!string.IsNullOrWhiteSpace(name))
                     {
-                        queryString.Append($" WHERE {filterColumn} LIKE @FilterValue");
-                        cmd.Parameters.AddWithValue("@FilterValue", $"%{filterValue}%");
+                        conditions.Add(" Name = @Name");
+                        cmd.Parameters.AddWithValue("@Name", name);
                     }
-                }
-                // Adding sort part of query
-                if (!string.IsNullOrWhiteSpace(sortColumn))
-                {
-                    if (!SortableColumns.ContainsKey(sortColumn.ToLower()))
+                    if (maxExchangePrice != null)
                     {
-                        throw new ArgumentException("Invalid sort column");
+                        conditions.Add(" ExchangePrice <= @ExchangePrice");
+                        cmd.Parameters.AddWithValue("@ExchangePrice", maxExchangePrice.Value);
                     }
-                    if (string.IsNullOrWhiteSpace(sortOrder) || !sortOrder.Equals("desc", StringComparison.OrdinalIgnoreCase))
+                    if (maxAmount != null)
                     {
-                        sortOrder = "ASC";
+                        conditions.Add(" Amount <= @Amount");
+                        cmd.Parameters.AddWithValue("@Amount", maxAmount.Value);
                     }
-                    queryString.Append($" ORDER BY {sortColumn} {sortOrder}");
-                }
-
-                cmd.CommandText = queryString.ToString();
-                await connection.OpenAsync();
-                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
-                {
-                    while (await reader.ReadAsync())
-                    {
-                        AktieHandel aktieHandel = new AktieHandel
-                        {
-                            Id = reader.GetInt32("Id"),
-                            Name = reader.GetString("Name"),
-                            Amount = reader.GetInt32("Amount"),
-                            ExchangePrice = reader.GetDouble("ExchangePrice")
-                        };
-                        aktieHandels.Add(aktieHandel);
-                    }
-                }
-                return aktieHandels;
-
-            }
-        }
-
-
-        /// <summary>
-        /// Lists <see cref="AktieHandel"/> objects from the database that match the specified comparison and sort criteria.
-        /// </summary>
-        /// <param name="compareColumn">The column to compare by.</param>
-        /// <param name="compareValue">The value to compare by.</param>
-        /// <param name="sortColumn">The column to sort by.</param>
-        /// <param name="sortOrder">The order to sort by.</param>
-        /// <returns>A list of <see cref="AktieHandel"/> objects that match the criteria.</returns>
-        /// <exception cref="ArgumentException"></exception>
-        public async Task<IEnumerable<AktieHandel>> ListComparable(string? compareColumn, double? compareValue, string? sortColumn, string? sortOrder)
-        {
-            List<AktieHandel> aktieHandels = new List<AktieHandel>();
-            if (string.IsNullOrWhiteSpace(compareColumn) && string.IsNullOrWhiteSpace(sortColumn))
-            {
-                return await GetAll();
-            }
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                SqlCommand cmd = new SqlCommand
-                {
-                    Connection = connection
-                };
-                StringBuilder queryString = new StringBuilder("Select * from AktieHandel");
-
-                // Adding comparison part of query
-                if (!string.IsNullOrWhiteSpace(compareColumn))
-                {
-                    if (!FilterableColumns.ContainsKey(compareColumn.ToLower()))
-                    {
-                        throw new ArgumentException("Invalid column name");
-                    }
-                    if (compareValue != null)
-                    {
-                        queryString.Append($" WHERE {compareColumn} >= @CompareValue");
-                        cmd.Parameters.AddWithValue("@CompareValue", compareValue);
-                    }
+                    queryString.Append(string.Join(" AND", conditions));
                 }
                 // Adding sort part of query
                 if (!string.IsNullOrWhiteSpace(sortColumn))

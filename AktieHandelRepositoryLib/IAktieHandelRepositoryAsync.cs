@@ -19,18 +19,6 @@ namespace AktieHandelRepositoryLib
         /// <returns>The deleted <see cref="AktieHandel"/> or null if not found.</returns>
         Task<AktieHandel?> Delete(int id);
         /// <summary>
-        /// Gets a list of <see cref="AktieHandel"/> objects from the database that have an ExchangePrice greater than or equal to the specified value.
-        /// </summary>
-        /// <param name="exchangePrice">The minimum ExchangePrice for the returned objects.</param>
-        /// <param name="name">The name to filter by, or null to not filter by name.</param>
-        /// <returns>A list of <see cref="AktieHandel"/> objects that match the criteria.</returns>
-        Task<IEnumerable<AktieHandel>> Get(double exchangePrice, string? name);
-        /// <summary>
-        /// Gets all <see cref="AktieHandel"/> objects from the database.
-        /// </summary>
-        /// <returns>A list of all <see cref="AktieHandel"/> objects.</returns>
-        Task<IEnumerable<AktieHandel>> GetAll();
-        /// <summary>
         /// Gets a single <see cref="AktieHandel"/> object from the database by its Id.
         /// </summary>
         /// <param name="id">The Id of the <see cref="AktieHandel"/> to retrieve.</param>
@@ -46,22 +34,14 @@ namespace AktieHandelRepositoryLib
         /// <summary>
         /// Lists <see cref="AktieHandel"/> objects from the database that match the specified filter and sort criteria.
         /// </summary>
-        /// <param name="filterColumn">The column to filter by.</param>
-        /// <param name="filterValue">The value to filter by.</param>
+        /// <param name="id">The Id to filter by, or null to not filter by Id.</param>
+        /// <param name="name">The name to filter by, or null to not filter by name.</param>
+        /// <param name="maxExchangePrice">The maximum ExchangePrice to filter by, or null to not filter by ExchangePrice.</param>
+        /// <param name="maxAmount">The maximum Amount to filter by, or null to not filter by Amount.</param>
         /// <param name="sortColumn">The column to sort by.</param>
         /// <param name="sortOrder">The order to sort by.</param>
         /// <returns>A list of <see cref="AktieHandel"/> objects that match the criteria.</returns>
         /// <exception cref="ArgumentException"></exception>
-        Task<IEnumerable<AktieHandel>> ListFiltered(string? filterColumn, string? filterValue, string? sortColumn, string? sortOrder);
-        /// <summary>
-        /// Lists <see cref="AktieHandel"/> objects from the database that match the specified comparison and sort criteria.
-        /// </summary>
-        /// <param name="compareColumn">The column to compare by.</param>
-        /// <param name="compareValue">The value to compare by.</param>
-        /// <param name="sortColumn">The column to sort by.</param>
-        /// <param name="sortOrder">The order to sort by.</param>
-        /// <returns>A list of <see cref="AktieHandel"/> objects that match the criteria.</returns>
-        /// <exception cref="ArgumentException"></exception>
-        Task<IEnumerable<AktieHandel>> ListComparable(string? compareColumn, double? compareValue, string? sortColumn, string? sortOrder);
+        Task<IEnumerable<AktieHandel>> GetAll(int? id = null, string? name = null, double? maxExchangePrice = null, int? maxAmount = null, string? sortColumn = null, string? sortOrder = null);
     }
 }
