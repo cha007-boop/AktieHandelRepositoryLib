@@ -66,7 +66,7 @@ namespace AktieHandelRepositoryLib
         /// <returns>The deleted <see cref="AktieHandel"/> or null if not found.</returns>
         public async Task<AktieHandel?> Delete(int id)
         {
-            AktieHandel aktieHandelToDelete = await GetById(id);
+            AktieHandel? aktieHandelToDelete = await GetById(id);
             if (aktieHandelToDelete == null)
             {
                 return null;
@@ -172,10 +172,7 @@ namespace AktieHandelRepositoryLib
                         };
                         return aktieHandel;
                     }
-                    else
-                    {
-                        return null;
-                    }
+                    return null;
                 }
             }
         }
@@ -188,7 +185,8 @@ namespace AktieHandelRepositoryLib
         /// <returns>The updated <see cref="AktieHandel"/> object, or null if not found.</returns>
         public async Task<AktieHandel?> Update(int id, AktieHandel aktie)
         {
-            if (GetById(id) == null)
+            AktieHandel? aktieHandelToUpdate = await GetById(id);
+            if (aktieHandelToUpdate == null)
             {
                 return null;
             }
@@ -203,7 +201,9 @@ namespace AktieHandelRepositoryLib
                     cmd.Parameters.AddWithValue("@ExchangePrice", aktie.ExchangePrice);
                     await connection.OpenAsync();
                     await cmd.ExecuteNonQueryAsync();
-                    return await GetById(id);
+
+                    aktie.Id = id;
+                    return aktie;
                 }
             }
         }
@@ -220,38 +220,45 @@ namespace AktieHandelRepositoryLib
         public async Task<IEnumerable<AktieHandel>> ListFiltered(string? filterColumn, string? filterValue, string? sortColumn, string? sortOrder)
         {
             List<AktieHandel> aktieHandels = new List<AktieHandel>();
-            if (filterColumn == null && sortColumn == null)
+            if (string.IsNullOrWhiteSpace(filterColumn) && string.IsNullOrWhiteSpace(sortColumn))
             {
                 return await GetAll();
             }
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                if (filterColumn != null && !FilterableColumns.ContainsKey(filterColumn.ToLower()))
-                {
-                    throw new ArgumentException("Invalid column name");
-                }
-                if (sortColumn != null && !SortableColumns.ContainsKey(sortColumn.ToLower()))
-                {
-                    throw new ArgumentException("Invalid sort column");
-                }
                 SqlCommand cmd = new SqlCommand
                 {
                     Connection = connection
                 };
                 StringBuilder queryString = new StringBuilder("Select * from AktieHandel");
-                if (filterColumn != null && filterValue != null)
+
+                // Adding filter part of query
+                if (!string.IsNullOrWhiteSpace(filterColumn))
                 {
-                    queryString.Append($" WHERE {filterColumn} LIKE @FilterValue");
-                    cmd.Parameters.AddWithValue("@FilterValue", $"%{filterValue}%");
+                    if (!FilterableColumns.ContainsKey(filterColumn.ToLower()))
+                    {
+                        throw new ArgumentException("Invalid column name");
+                    }
+                    if (!string.IsNullOrWhiteSpace(filterValue))
+                    {
+                        queryString.Append($" WHERE {filterColumn} LIKE @FilterValue");
+                        cmd.Parameters.AddWithValue("@FilterValue", $"%{filterValue}%");
+                    }
                 }
-                if (sortColumn != null)
+                // Adding sort part of query
+                if (!string.IsNullOrWhiteSpace(sortColumn))
                 {
-                    if (sortOrder == null || !sortOrder.Equals("desc", StringComparison.OrdinalIgnoreCase))
+                    if (!SortableColumns.ContainsKey(sortColumn.ToLower()))
+                    {
+                        throw new ArgumentException("Invalid sort column");
+                    }
+                    if (string.IsNullOrWhiteSpace(sortOrder) || !sortOrder.Equals("desc", StringComparison.OrdinalIgnoreCase))
                     {
                         sortOrder = "ASC";
                     }
                     queryString.Append($" ORDER BY {sortColumn} {sortOrder}");
                 }
+
                 cmd.CommandText = queryString.ToString();
                 await connection.OpenAsync();
                 using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
@@ -286,38 +293,45 @@ namespace AktieHandelRepositoryLib
         public async Task<IEnumerable<AktieHandel>> ListComparable(string? compareColumn, double? compareValue, string? sortColumn, string? sortOrder)
         {
             List<AktieHandel> aktieHandels = new List<AktieHandel>();
-            if (compareColumn == null && sortColumn == null)
+            if (string.IsNullOrWhiteSpace(compareColumn) && string.IsNullOrWhiteSpace(sortColumn))
             {
                 return await GetAll();
             }
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                if (compareColumn != null && !ComparableColumns.ContainsKey(compareColumn))
-                {
-                    throw new ArgumentException("Invalid column name");
-                }
-                if (sortColumn != null && !SortableColumns.ContainsKey(sortColumn))
-                {
-                    throw new ArgumentException("Invalid sort column");
-                }
                 SqlCommand cmd = new SqlCommand
                 {
                     Connection = connection
                 };
                 StringBuilder queryString = new StringBuilder("Select * from AktieHandel");
-                if (compareColumn != null && compareValue != null)
+
+                // Adding comparison part of query
+                if (!string.IsNullOrWhiteSpace(compareColumn))
                 {
-                    queryString.Append($" WHERE {compareColumn} >= @CompareValue");
-                    cmd.Parameters.AddWithValue("@CompareValue", compareValue);
+                    if (!FilterableColumns.ContainsKey(compareColumn.ToLower()))
+                    {
+                        throw new ArgumentException("Invalid column name");
+                    }
+                    if (compareValue != null)
+                    {
+                        queryString.Append($" WHERE {compareColumn} >= @CompareValue");
+                        cmd.Parameters.AddWithValue("@CompareValue", compareValue);
+                    }
                 }
-                if (sortColumn != null)
+                // Adding sort part of query
+                if (!string.IsNullOrWhiteSpace(sortColumn))
                 {
-                    if (sortOrder == null || !sortOrder.Equals("desc", StringComparison.OrdinalIgnoreCase))
+                    if (!SortableColumns.ContainsKey(sortColumn.ToLower()))
+                    {
+                        throw new ArgumentException("Invalid sort column");
+                    }
+                    if (string.IsNullOrWhiteSpace(sortOrder) || !sortOrder.Equals("desc", StringComparison.OrdinalIgnoreCase))
                     {
                         sortOrder = "ASC";
                     }
                     queryString.Append($" ORDER BY {sortColumn} {sortOrder}");
                 }
+
                 cmd.CommandText = queryString.ToString();
                 await connection.OpenAsync();
                 using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
@@ -335,6 +349,7 @@ namespace AktieHandelRepositoryLib
                     }
                 }
                 return aktieHandels;
+
             }
         }
     }

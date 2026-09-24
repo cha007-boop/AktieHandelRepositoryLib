@@ -1,5 +1,6 @@
 ﻿using AktieHandelRepositoryLib;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -18,38 +19,142 @@ namespace RestExercise1.Controllers
         }
 
         // GET: api/<AktiehandelsController>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet]
-        public async Task<IEnumerable<AktieHandel>> Get()
+        public async Task<ActionResult<IEnumerable<AktieHandel>>> Get()
         {
-            return await _repository.GetAll();
+            var aktieHandels = await _repository.GetAll();
+            if (aktieHandels == null)
+            {
+                return NotFound();
+            }
+            if (aktieHandels.Count() == 0)
+            {
+                return NoContent();
+            }
+
+            return Ok(aktieHandels);
+        }
+
+        // GET api/<AktieHandelsController>/filter?column=<columnName>&value=<filterValue>&sort=<columnName>&order=<sortOrder>
+        [HttpGet("filter")]
+        public async Task<ActionResult<IEnumerable<AktieHandel>>> GetFiltered([FromQuery] string column, 
+                                                                              [FromQuery] string value, 
+                                                                              [FromQuery] string sort, 
+                                                                              [FromQuery] string order)
+        {
+            try
+            {
+                var aktieHandels = await _repository.ListFiltered(column, value, sort, order);
+                if (aktieHandels == null)
+                {
+                    return NotFound();
+                }
+                if (aktieHandels.Count() == 0)
+                {
+                    return NoContent();
+                }
+
+                return Ok(aktieHandels);
+            }
+            catch (ArgumentException)
+            {
+                return BadRequest();
+            }
         }
 
         // GET api/<AktiehandelsController>/<id>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet("{id}")]
-        public async Task<AktieHandel?> Get(int id)
+        public async Task<ActionResult<AktieHandel>> Get(int id)
         {
-            return await _repository.GetById(id);
+            var aktieHandel = await _repository.GetById(id);
+            if (aktieHandel == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(aktieHandel);
         }
 
         // POST api/<AktiehandelsController>
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPost]
-        public async Task<AktieHandel?> Post([FromBody] AktieHandel aktieHandel)
+        public async Task<ActionResult<AktieHandel?>> Post([FromBody] AktieHandelDTO aktieHandel)
         {
-            return await _repository.Add(aktieHandel);
+
+            try
+            {
+                AktieHandel theAddedAktieHandel = await _repository.Add(AktieHandelDTOHelper.DTOtoClass(aktieHandel));
+                if (await _repository.GetById(theAddedAktieHandel.Id) != null)
+                {
+                    return Created($"/api/aktiehandels/{theAddedAktieHandel.Id}", theAddedAktieHandel);
+                }
+                else
+                {
+                    return BadRequest();
+                }
+            }
+            catch (SqlException)
+            {
+                return BadRequest();
+            }
+            catch (ArgumentException)
+            {
+                return BadRequest();
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+
+
         }
 
-        // PUT api/<AktiehandelsController>/<id>
+        // PUT api/<AktieHandelsController>/<id>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpPut("{id}")]
-        public async Task<AktieHandel?> Put(int id, [FromBody] AktieHandel aktieHandel)
+        public async Task<ActionResult<AktieHandel>> Put(int id, [FromBody] AktieHandelDTO aktieHandel)
         {
-            return await _repository.Update(id, aktieHandel);
+            try
+            {
+                var updatedAktieHandel = await _repository.Update(id, AktieHandelDTOHelper.DTOtoClass(aktieHandel));
+                if (updatedAktieHandel != null)
+                {
+                    return Ok(updatedAktieHandel);
+                }
+                else
+                {
+                    return NotFound();
+                }
+            }
+            catch (ArgumentException)
+            {
+                return BadRequest();
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
         }
 
         // DELETE api/<AktiehandelsController>/<id>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpDelete("{id}")]
-        public async Task<AktieHandel?> Delete(int id)
+        public async Task<ActionResult<AktieHandel?>> Delete(int id)
         {
-            return await _repository.Delete(id);
+            AktieHandel? deletedAktieHandel = await _repository.Delete(id);
+            if (deletedAktieHandel != null)
+            {
+                return Ok(deletedAktieHandel);
+            }
+            return NotFound();
         }
     }
 }
