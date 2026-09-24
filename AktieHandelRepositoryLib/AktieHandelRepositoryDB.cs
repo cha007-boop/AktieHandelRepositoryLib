@@ -168,17 +168,21 @@ namespace AktieHandelRepositoryLib
         /// </summary>
         /// <param name="id">The Id of the <see cref="AktieHandel"/> to filter by, or null to not filter by Id.</param>
         /// <param name="name">The name to filter by, or null to not filter by name.</param>
-        /// <param name="maxExchangePrice">The maximum ExchangePrice to filter by, or null to not filter by ExchangePrice.</param>
-        /// <param name="maxAmount">The maximum Amount to filter by, or null to not filter by Amount.</param>
-        /// <param name="sortColumn">The column to sort by.</param>
+        /// <param name="maxExchangePrice">The maximum ExchangePrice to filter by, or null to not filter by Nax. ExchangePrice.</param>
+        /// <param name="minExchangePrice">The minimum ExchangePrice to filtler by, or null to not filter by Min. ExchangePrice</param>
+        /// <param name="maxAmount">The maximum Amount to filter by, or null to not filter by Max. Amount.</param>
+        /// <param name="minAmount">The minimum Amount to filter by, or null to not filter by Min. Amount.</param>
+        /// <param name="sortBy">The column to sort by.</param>
         /// <param name="sortOrder">The order to sort by.</param>
         /// <returns>A list of <see cref="AktieHandel"/> objects that match the criteria.</returns>
         /// <exception cref="ArgumentException"></exception>
-        public async Task<IEnumerable<AktieHandel>> GetAll(int? id = null, 
-                                                           string? name = null, 
-                                                           double? maxExchangePrice = null, 
-                                                           int? maxAmount = null, 
-                                                           string? sortColumn = null, 
+        public async Task<IEnumerable<AktieHandel>> GetAll(int? id = null,
+                                                           string? name = null,
+                                                           double? maxExchangePrice = null,
+                                                           double? minExchangePrice = null,
+                                                           int? maxAmount = null,
+                                                           int? minAmount = null,
+                                                           string? sortBy = null,
                                                            string? sortOrder = null)
         {
             List<AktieHandel> aktieHandels = new List<AktieHandel>();
@@ -191,36 +195,48 @@ namespace AktieHandelRepositoryLib
                 StringBuilder queryString = new StringBuilder("Select * from AktieHandel");
 
                 // Adding filter part of query
-                if (!string.IsNullOrWhiteSpace(name) || id.HasValue || maxExchangePrice != null || maxAmount != null)
+                if (id.HasValue || !string.IsNullOrWhiteSpace(name) || 
+                    maxExchangePrice.HasValue || minExchangePrice.HasValue || 
+                    maxAmount.HasValue || minAmount.HasValue)
                 {
-                    queryString.Append(" WHERE");
+                    queryString.Append(" WHERE ");
                     List<string> conditions = new List<string>();
                     if (id.HasValue)
                     {
-                        conditions.Add(" Id = @Id");
+                        conditions.Add("Id = @Id");
                         cmd.Parameters.AddWithValue("@Id", id.Value);
                     }
                     if (!string.IsNullOrWhiteSpace(name))
                     {
-                        conditions.Add(" Name = @Name");
+                        conditions.Add("Name = @Name");
                         cmd.Parameters.AddWithValue("@Name", name);
                     }
-                    if (maxExchangePrice != null)
+                    if (maxExchangePrice.HasValue)
                     {
-                        conditions.Add(" ExchangePrice <= @ExchangePrice");
-                        cmd.Parameters.AddWithValue("@ExchangePrice", maxExchangePrice.Value);
+                        conditions.Add("ExchangePrice <= @maxExchangePrice");
+                        cmd.Parameters.AddWithValue("@maxExchangePrice", maxExchangePrice.Value);
                     }
-                    if (maxAmount != null)
+                    if (minExchangePrice.HasValue)
                     {
-                        conditions.Add(" Amount <= @Amount");
-                        cmd.Parameters.AddWithValue("@Amount", maxAmount.Value);
+                        conditions.Add("ExchangePrice >= @minExchangePrice");
+                        cmd.Parameters.AddWithValue("@minExchangePrice", minExchangePrice.Value);
                     }
-                    queryString.Append(string.Join(" AND", conditions));
+                    if (maxAmount.HasValue)
+                    {
+                        conditions.Add("Amount <= @maxAmount");
+                        cmd.Parameters.AddWithValue("@maxAmount", maxAmount.Value);
+                    }
+                    if (minAmount.HasValue)
+                    {
+                        conditions.Add("Amount >= @minAmount");
+                        cmd.Parameters.AddWithValue("@minAmount", minAmount.Value);
+                    }
+                    queryString.Append(string.Join(" AND ", conditions));
                 }
                 // Adding sort part of query
-                if (!string.IsNullOrWhiteSpace(sortColumn))
+                if (!string.IsNullOrWhiteSpace(sortBy))
                 {
-                    if (!SortableColumns.ContainsKey(sortColumn.ToLower()))
+                    if (!SortableColumns.ContainsKey(sortBy.ToLower()))
                     {
                         throw new ArgumentException("Invalid sort column");
                     }
@@ -228,7 +244,7 @@ namespace AktieHandelRepositoryLib
                     {
                         sortOrder = "ASC";
                     }
-                    queryString.Append($" ORDER BY {sortColumn} {sortOrder}");
+                    queryString.Append($" ORDER BY {sortBy} {sortOrder}");
                 }
 
                 cmd.CommandText = queryString.ToString();

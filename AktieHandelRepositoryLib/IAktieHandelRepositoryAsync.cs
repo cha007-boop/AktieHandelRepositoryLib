@@ -38,10 +38,10 @@ namespace AktieHandelRepositoryLib
         /// <param name="name">The name to filter by, or null to not filter by name.</param>
         /// <param name="maxExchangePrice">The maximum ExchangePrice to filter by, or null to not filter by ExchangePrice.</param>
         /// <param name="maxAmount">The maximum Amount to filter by, or null to not filter by Amount.</param>
-        /// <param name="sortColumn">The column to sort by.</param>
+        /// <param name="sortBy">The column to sort by.</param>
         /// <param name="sortOrder">The order to sort by.</param>
         /// <returns>A list of <see cref="AktieHandel"/> objects that match the criteria.</returns>
         /// <exception cref="ArgumentException"></exception>
-        Task<IEnumerable<AktieHandel>> GetAll(int? id = null, string? name = null, double? maxExchangePrice = null, int? maxAmount = null, string? sortColumn = null, string? sortOrder = null);
+        Task<IEnumerable<AktieHandel>> GetAll(int? id = null, string? name = null, double? maxExchangePrice = null, double? minExchangePrice = null, int? maxAmount = null, int? minAmount = null, string? sortBy = null, string? sortOrder = null);
     }
 }

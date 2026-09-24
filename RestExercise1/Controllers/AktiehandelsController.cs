@@ -18,51 +18,34 @@ namespace RestExercise1.Controllers
             _repository = repository;
         }
 
-        // GET: api/<AktiehandelsController>
+
+
+        // GET api/<AktieHandelsController>?id=<id>&name=<name>&maxExchangePrice=<maxExchangePrice>&minExchangePrice=<minExchangePrice>&maxAmount=<maxAmount>&minAmount=<minAmount>&sort=<sort>&order=<order>
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<AktieHandel>>> Get()
-        {
-            var aktieHandels = await _repository.GetAll();
-            if (aktieHandels == null)
-            {
-                return NotFound();
-            }
-            if (aktieHandels.Count() == 0)
-            {
-                return NoContent();
-            }
-
-            return Ok(aktieHandels);
-        }
-
-        // GET api/<AktieHandelsController>/filter?id=<id>&name=<name>&maxExchangePrice=<maxExchangePrice>&maxAmount=<maxAmount>&sort=<sort>&order=<order>
-        [HttpGet("filter")]
         public async Task<ActionResult<IEnumerable<AktieHandel>>> GetAll([FromQuery] int? id = null,
-                                                                              [FromQuery] string? name = null,
-                                                                              [FromQuery] double? maxExchangePrice = null,
-                                                                              [FromQuery] int? maxAmount = null,
-                                                                              [FromQuery] string? sort = null,
-                                                                              [FromQuery] string? order = null)
+                                                                         [FromQuery] string? name = null,
+                                                                         [FromQuery] double? maxExchangePrice = null,
+                                                                         [FromQuery] double? minExchangePrice = null,
+                                                                         [FromQuery] int? maxAmount = null,
+                                                                         [FromQuery] int? minAmount = null,
+                                                                         [FromQuery] string? sort = null,
+                                                                         [FromQuery] string? order = null)
         {
             try
             {
-                var aktieHandels = await _repository.GetAll(id, name, maxExchangePrice, maxAmount, sort, order);
-                if (aktieHandels == null)
+                var aktieHandels = await _repository.GetAll(id, name, maxExchangePrice, minExchangePrice, maxAmount, minAmount, sort, order);
+                if (aktieHandels == null || aktieHandels.Count() == 0)
                 {
                     return NotFound();
                 }
-                if (aktieHandels.Count() == 0)
-                {
-                    return NoContent();
-                }
-
                 return Ok(aktieHandels);
             }
-            catch (ArgumentException)
+            catch (ArgumentException aex)
             {
-                return BadRequest();
+                return BadRequest(aex.Message);
             }
         }
 
