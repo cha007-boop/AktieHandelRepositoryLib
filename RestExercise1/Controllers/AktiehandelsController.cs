@@ -8,7 +8,6 @@ using Microsoft.Data.SqlClient;
 
 namespace RestExercise1.Controllers
 {
-    
     [Route("api/[controller]")]
     [ApiController]
     //[Authorize]
@@ -71,6 +70,7 @@ namespace RestExercise1.Controllers
         [Authorize]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [HttpPost]
         public async Task<ActionResult<AktieHandel?>> Post([FromBody] AktieHandelDTO aktieHandel)
         {
@@ -100,8 +100,10 @@ namespace RestExercise1.Controllers
         }
 
         // PUT api/<AktieHandelsController>/<id>
+        [Authorize(Roles = "admin")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpPut("{id}")]
         public async Task<ActionResult<AktieHandel>> Put(int id, [FromBody] AktieHandelDTO aktieHandel)
@@ -129,8 +131,9 @@ namespace RestExercise1.Controllers
         }
 
         // DELETE api/<AktiehandelsController>/<id>
-        [Authorize]
+        [Authorize(Roles = "admin")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpDelete("{id}")]
         public async Task<ActionResult<AktieHandel?>> Delete(int id)

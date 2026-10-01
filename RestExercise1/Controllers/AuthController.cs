@@ -25,17 +25,17 @@ namespace RestExercise1.Controllers
         public IActionResult Login([FromBody] LoginRequest login)
         {
             // 1. Validate the user (In a real scenario, check your database here)
-            // Here we use a simple hardcoded check:
-            if (_authenticator.Authenticate(login.Username,login.Password))
+            Role? loginRole = _authenticator.Authenticate(login.Username, login.Password);
+            if (loginRole.HasValue)
             {
-                var token = GenerateJwtToken(login.Username);
+                var token = GenerateJwtToken(login.Username,(Role)loginRole);
                 return Ok(new { token });
             }
 
             return Unauthorized("Invalid username or password.");
         }
 
-        private string GenerateJwtToken(string username)
+        private string GenerateJwtToken(string username, Role loginRole)
         {
             var jwtSettings = _config.GetSection("Jwt");
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]!));
@@ -47,7 +47,7 @@ namespace RestExercise1.Controllers
                 new Claim(JwtRegisteredClaimNames.Sub, username),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(ClaimTypes.Name, username),
-                new Claim(ClaimTypes.Role, "Admin") // You can add roles here
+                new Claim(ClaimTypes.Role, loginRole.ToString()) // You can add roles here
             };
 
             var token = new JwtSecurityToken(

@@ -2,16 +2,22 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AktieHandelRepositoryLib
+namespace RestExercise1
 {
     public class SimpleAuthenticator : IAuthenticator
     {
-        public bool Authenticate(string username, string password)
+        public Role? Authenticate(string username, string password)
         {
-            if (username == "admin" || password == "1234")
-                return true;
+            if (username == "admin" && password == "1234")
+            {
+                return Role.admin;
+            }
+            else if (username == "user" && password == "1234")
+            {
+                return Role.user;
+            }
             else
-                return false;
+                return null;
         }
     }
 }

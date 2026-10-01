@@ -2,6 +2,7 @@ using AktieHandelRepositoryLib;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using RestExercise1;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -35,10 +36,6 @@ builder.Services.AddSwaggerGen(opt =>
         }
     });
 });
-
-
-
-
 
 builder.Services.AddCors(options =>
 {

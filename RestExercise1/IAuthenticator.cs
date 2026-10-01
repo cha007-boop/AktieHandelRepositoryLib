@@ -2,10 +2,14 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AktieHandelRepositoryLib
+namespace RestExercise1
 {
+    public enum Role
+    {
+        user, admin, superuser
+    }
     public interface IAuthenticator
     {
-        bool Authenticate(string username, string password);
+        Role? Authenticate(string username, string password);
     }
 }
