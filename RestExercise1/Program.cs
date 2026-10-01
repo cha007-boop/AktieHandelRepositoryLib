@@ -1,6 +1,7 @@
 using AktieHandelRepositoryLib;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,7 +13,31 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(opt =>
+{
+    opt.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
+
+    opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Enter JWT token"
+    });
+
+    opt.AddSecurityRequirement(doc => new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecuritySchemeReference("Bearer", doc),
+            new List<string>()
+        }
+    });
+});
+
+
+
 
 
 builder.Services.AddCors(options =>
@@ -26,9 +51,10 @@ builder.Services.AddCors(options =>
         });
 });
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+//builder.Services.AddOpenApi(); disabled to make swagger work
 
 builder.Services.AddTransient<IAktieHandelRepositoryAsync,AktieHandelRepositoryDB>();
+builder.Services.AddTransient<IAuthenticator, SimpleAuthenticator>();
 
 // JWT
 var jwtSettings = builder.Configuration.GetSection("Jwt");
@@ -64,7 +90,7 @@ var app = builder.Build();
    
 //}
 
-app.MapOpenApi();
+//app.MapOpenApi(); disabled to make swagger work
 app.UseSwagger();
 app.UseSwaggerUI();
 

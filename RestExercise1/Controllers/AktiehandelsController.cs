@@ -1,4 +1,5 @@
 ﻿using AktieHandelRepositoryLib;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 
@@ -7,8 +8,10 @@ using Microsoft.Data.SqlClient;
 
 namespace RestExercise1.Controllers
 {
+    
     [Route("api/[controller]")]
     [ApiController]
+    //[Authorize]
     public class AktiehandelsController : ControllerBase
     {
         private readonly IAktieHandelRepositoryAsync _repository;
@@ -65,6 +68,7 @@ namespace RestExercise1.Controllers
         }
 
         // POST api/<AktiehandelsController>
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPost]
@@ -125,6 +129,7 @@ namespace RestExercise1.Controllers
         }
 
         // DELETE api/<AktiehandelsController>/<id>
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpDelete("{id}")]
