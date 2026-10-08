@@ -1,0 +1,451 @@
+{
+  "info": {
+    "_postman_id": "976b53ed-6699-44c2-aff5-d36298ba7ea7",
+    "name": "AktieHandel",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "58116196"
+  },
+  "item": [
+    {
+      "name": "GetById Not Found",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 404\", function () {\r\n    pm.response.to.have.status(404);\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5138/api/aktiehandels/0",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "5138",
+          "path": [
+            "api",
+            "aktiehandels",
+            "0"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GetAll Success",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5138/api/aktiehandels",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "5138",
+          "path": [
+            "api",
+            "aktiehandels"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Add Bad Request",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 400\", function () {\r\n    pm.response.to.have.status(400);\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{json_web_token_07pn}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"name\": \"a\",\r\n    \"amount\": 0,\r\n    \"exchangePrice\": -1\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:5138/api/aktiehandels",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "5138",
+          "path": [
+            "api",
+            "aktiehandels"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Add Success",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 201\", function () {\r\n    pm.response.to.have.status(201);\r\n});\r\n\r\npm.test(\"Location is present\", function () {\r\n    pm.response.to.have.header(\"Location\");\r\n});\r\n\r\npm.collectionVariables.set(\"TestId\", pm.response.json().id);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{json_web_token_07pn}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"name\": \"test\",\r\n    \"amount\": 1,\r\n    \"exchangePrice\": 1\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:5138/api/aktiehandels",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "5138",
+          "path": [
+            "api",
+            "aktiehandels"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GetById Success",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});"
+            ]
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.request.url = pm.request.url + \"/\" + pm.collectionVariables.get(\"TestId\")"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5138/api/aktiehandels",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "5138",
+          "path": [
+            "api",
+            "aktiehandels"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update success",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// Add the collection variable \"TestId\" to the uri\r\npm.request.url = pm.request.url + \"/\" + pm.collectionVariables.get(\"TestId\")\r\n\r\n"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"name\": \"updated name\",\r\n    \"amount\": 10,\r\n    \"exchangePrice\": 10\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:5138/api/AktieHandels",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "5138",
+          "path": [
+            "api",
+            "AktieHandels"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update Not found",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              ""
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 404\", function () {\r\n    pm.response.to.have.status(404);\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"name\": \"updated name\",\r\n    \"amount\": 10,\r\n    \"exchangePrice\": 10\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:5138/api/AktieHandels/0",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "5138",
+          "path": [
+            "api",
+            "AktieHandels",
+            "0"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update Bad Request",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.request.url = pm.request.url + \"/\" + pm.collectionVariables.get(\"TestId\")"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 400\", function () {\r\n    pm.response.to.have.status(400);\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"name\": \"a\",\r\n    \"amount\": 0,\r\n    \"exchangePrice\": -1\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:5138/api/AktieHandels",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "5138",
+          "path": [
+            "api",
+            "AktieHandels"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete Success",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.request.url = pm.request.url + \"/\" + pm.collectionVariables.get(\"TestId\")"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5138/api/AktieHandels",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "5138",
+          "path": [
+            "api",
+            "AktieHandels"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete Not found",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.request.url = pm.request.url + \"/\" + pm.collectionVariables.get(\"TestId\")"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 404\", function () {\r\n    pm.response.to.have.status(404);\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5138/api/AktieHandels",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "5138",
+          "path": [
+            "api",
+            "AktieHandels"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "TestId",
+      "value": ""
+    },
+    {
+      "key": "json_web_token_07pn",
+      "secret": true
+    }
+  ]
+}
