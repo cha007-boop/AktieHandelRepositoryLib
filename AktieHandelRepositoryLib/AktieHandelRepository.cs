@@ -72,7 +72,7 @@ namespace AktieHandelRepositoryLib
             var aktieHandel = GetById(id);
             if (aktieHandel != null)
             {
-                //_aktieHandelList.Remove(aktieHandel);
+                _aktieHandelList.Remove(aktieHandel);
             }
             return aktieHandel;
         }
